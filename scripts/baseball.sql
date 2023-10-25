@@ -47,9 +47,15 @@ USING (playerid)
 WHERE fielding.yearid = '2016'
 GROUP BY position 
 ORDER BY Putouts DESC;
-   
+-- Answer: infield = 58934, Battery = 41424, outfield = 29560
 -- 5. Find the average number of strikeouts per game by decade since 1920. Round the numbers you report to 2 decimal places. Do the same for home runs per game. Do you see any trends?
-   
+SELECT ROUND(AVG(so),2) AS avg_strikeouts, ROUND(AVG(hr),2) AS avg_homeruns, yearid
+FROM batting
+WHERE yearid >= '1920'
+GROUP BY yearid
+ORDER BY yearid
+--Answer: In general both are increasing 
+
 
 -- 6. Find the player who had the most success stealing bases in 2016, where __success__ is measured as the percentage of stolen base attempts which are successful. (A stolen base attempt results either in a stolen base or being caught stealing.) Consider only players who attempted _at least_ 20 stolen bases.
 	
