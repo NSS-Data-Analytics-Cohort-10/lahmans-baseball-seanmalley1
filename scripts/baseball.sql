@@ -58,8 +58,13 @@ ORDER BY yearid
 
 
 -- 6. Find the player who had the most success stealing bases in 2016, where __success__ is measured as the percentage of stolen base attempts which are successful. (A stolen base attempt results either in a stolen base or being caught stealing.) Consider only players who attempted _at least_ 20 stolen bases.
-
-
+SELECT batting.playerid, people.namefirst, people.namelast, batting.sb, batting.cs, ROUND((batting.sb::decimal/(batting.sb::decimal + batting.cs::decimal)),2) as success_stealing
+FROM batting
+LEFT JOIN PEOPLE 
+USING (playerid)
+WHERE batting.yearid >= '2016' AND batting.sb + batting.cs >= 20
+ORDER BY success_stealing DESC
+--ANSWER Chris Owings, 91 success rate%
 	
 
 -- 7.  From 1970 â€“ 2016, what is the largest number of wins for a team that did not win the world series? What is the smallest number of wins for a team that did win the world series? Doing this will probably result in an unusually small number of wins for a world series champion â€“ determine why this is the case. Then redo your query, excluding the problem year. How often from 1970 â€“ 2016 was it the case that a team with the most wins also won the world series? What percentage of the time?
