@@ -67,7 +67,26 @@ ORDER BY success_stealing DESC
 --ANSWER Chris Owings, 91 success rate%
 	
 
--- 7.  From 1970 â€“ 2016, what is the largest number of wins for a team that did not win the world series? What is the smallest number of wins for a team that did win the world series? Doing this will probably result in an unusually small number of wins for a world series champion â€“ determine why this is the case. Then redo your query, excluding the problem year. How often from 1970 â€“ 2016 was it the case that a team with the most wins also won the world series? What percentage of the time?
+-- 7.  From 1970 - 2016, what is the largest number of wins for a team that did not win the world series? What is the smallest number of wins for a team that did win the world series? 
+--Answer: Seattle Mariners 116, 
+-- Doing this will probably result in an unusually small number of wins for a world series champion â€“ determine why this is the case. Then redo your query, excluding the problem year. How often from 1970 â€“ 2016 was it the case that a team with the most wins also won the world series? What percentage of the time?
+SELECT name, wswin, w, l, yearid
+FROM teams
+WHERE wswin IS NOT NULL
+	AND yearid BETWEEN 1970 AND 2016 AND wswin = 'N'
+ORDER BY w DESC
+--- For smallest number of wins
+SELECT name, wswin, w, l, yearid
+FROM teams
+WHERE wswin IS NOT NULL AND yearid BETWEEN 1970 AND 2016 AND wswin = 'Y' 
+GROUP BY name, wswin, w, l, yearid
+ORDER BY w ASC
+--Answer Dodgers had 47 Wins but somehow won the sportsball contest.
+SELECT name, wswin, w, l, yearid
+FROM teams
+WHERE wswin IS NOT NULL AND yearid BETWEEN 1970 AND 2016 AND wswin = 'Y' AND yearid <> 1981
+GROUP BY name, wswin, w, l, yearid
+ORDER BY w ASC
 
 
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
