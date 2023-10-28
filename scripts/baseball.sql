@@ -73,22 +73,23 @@ FROM teams
 WHERE wswin IS NOT NULL
 	AND yearid BETWEEN 1970 AND 2016 AND wswin = 'N'
 ORDER BY w DESC
---- For smallest number of wins
+--- For smallest number of wins --Answer: Seattle Mariners 116, 
 SELECT name, wswin, w, l, yearid
 FROM teams
 WHERE wswin IS NOT NULL AND yearid BETWEEN 1970 AND 2016 AND wswin = 'Y' 
 GROUP BY name, wswin, w, l, yearid
 ORDER BY w ASC
+-- Answer: dodgers @ 47 wins in 1981
 
 SELECT COUNT(name), name, wswin, w, l, yearid
 FROM teams
 WHERE wswin IS NOT NULL AND yearid BETWEEN 1970 AND 2016 AND wswin = 'Y' AND yearid <> 1981
 GROUP BY name, wswin, w, l, yearid
 ORDER BY w ASC
---Answer Dodgers had 47 Wins but somehow won the sportsball contest.
+--Answer Cardinals @ 78 wins in 2006
 
 SELECT
-    COUNT(DISTINCT t.yearid) AS Most_Wins_and_WS_winner
+    COUNT(DISTINCT t.yearid) AS Most_Wins_and_WS_winner, Most_Wins_and_WS_winner
 FROM 
     teams t
 INNER JOIN 
@@ -104,6 +105,20 @@ GROUP BY yearid
 --45 seaons
 
 -- ANSWER -- So 12/45 = .26 = 27% of the time.
+--- SECOND PART OF 7 WHERE I USE TWO CTEs TO SOLVE IT ALL IN ONE GO
+WITH winwin AS (
+    SELECT COUNT(DISTINCT t.yearid) AS Most_Wins_and_WS_winner
+    FROM teams t
+    INNER JOIN seriespost s ON t.yearid = s.yearid AND t.teamid = s.teamidwinner AND s.round = 'WS'
+    WHERE t.w = (SELECT MAX(w) FROM teams WHERE yearid = t.yearid) AND t.yearid != 1981 AND t.yearid BETWEEN 1970 AND 2016
+), 
+seasons AS (
+    SELECT COUNT(DISTINCT yearid) as total_seasons
+    FROM seriespost
+    WHERE yearid BETWEEN 1970 AND 2016 AND yearid != 1981
+)
+SELECT (winwin.Most_Wins_and_WS_winner::float / seasons.total_seasons::float)*100 as percent_wins
+FROM winwin, seasons;
 
 
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
@@ -202,13 +217,6 @@ WHERE
     a.awardID = 'TSN Manager of the Year' AND (m.lgID = 'AL' OR m.lgID = 'NL')
 GROUP BY m.yearID, m.lgID, m.playerID, p.nameFirst, p.nameLast, a.awardID
 ORDER BY p.namelast, m.yearID DESC
-
-
-
-
-
-
-
 
 
 -- 10. Find all players who hit their career highest number of home runs in 2016. Consider only players who have played in the league for at least 10 years, and who hit at least one home run in 2016. Report the players' first and last names and the number of home runs they hit in 2016.
