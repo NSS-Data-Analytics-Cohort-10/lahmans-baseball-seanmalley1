@@ -107,7 +107,7 @@ GROUP BY yearid
 
 
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
- 
+
 
 -- SELECT * from homegames where games >= 10
 
@@ -155,21 +155,55 @@ INNER JOIN (SELECT * FROM teams ) as team_info ON bot.team = team_info.teamid AN
 GROUP BY bot.attend_2016, bot.games, bot.park, team_info.name
 ORDER BY bot.park)
 ORDER BY 1 DESC, 2
+-- ANSWER Top 5: Chicago Cubs, Sanfrancisco Giants, Toronto Blue Jays, St. Louis Cardinals, Los Angeles Dodgers
+-- Bottom 5 Tampa Bay Rays, Oakland Atheletics, Cleveland Indians, Miami Marlins, Chicago White Sox.
 
 -- 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
 SELECT *
 FROM awardsmanagers
 
 --
-SELECT playerid, awardid, lgid, yearid
-FROM awardsmanagers
-WHERE (SELECT
-		CASE	WHEN awardid LIKE 'TSN Manager of the Year' AND 
-				WHEN lgid = 'AL' THEN 'AL Award Only' 
-				WHEN lgid IN ('AL', 'ML') THEN 'AL and ML Awards'
-				WHEN lgid = 'ML' THEN 'ML Award Only'
-				END AS awards)	
-GROUP BY awardid, playerid, yearid, lgid
+-- SELECT playerid, awardid, lgid, yearid
+-- FROM awardsmanagers
+-- WHERE (SELECT
+-- 		CASE	WHEN awardid LIKE 'TSN Manager of the Year' AND 
+-- 				WHEN lgid = 'AL' THEN 'AL Award Only' 
+-- 				WHEN lgid IN ('AL', 'ML') THEN 'AL and ML Awards'
+-- 				WHEN lgid = 'ML' THEN 'ML Award Only'
+-- 				END AS awards)	
+-- GROUP BY awardid, playerid, yearid, lgid
+-------------------------------------------------------------------------------
+SELECT 
+    am.playerid, p.namefirst, p.namelast, t.name, am.yearid
+FROM 
+    awardsmanagers AS am
+WHERE 
+    awardid = 'TSN Manager of the Year' AND lgid IN ('AL', 'ML')
+INNER JOIN managers AS m
+USING(playerid)
+INNER JOIN teams AS t
+USING(teamid)
+INNER JOIN people as p
+USING(teamid)
+GROUP BY playerid
+---------------------------------------------------------------------------------
+
+SELECT 
+    m.yearID, m.lgID, m.playerID, p.nameFirst, p.nameLast, a.awardID
+FROM 
+    Managers m
+JOIN 
+    People p ON m.playerID = p.playerID
+JOIN 
+    AwardsManagers a ON m.playerID = a.playerID AND m.yearID = a.yearID AND m.lgID = a.lgID
+JOIN 
+	teams ON a.yearid = t.yearid
+WHERE 
+    a.awardID = 'TSN Manager of the Year' AND (m.lgID = 'AL' OR m.lgID = 'NL')
+GROUP BY m.yearID, m.lgID, m.playerID, p.nameFirst, p.nameLast, a.awardID
+ORDER BY p.namelast, m.yearID DESC
+
+
 
 
 
