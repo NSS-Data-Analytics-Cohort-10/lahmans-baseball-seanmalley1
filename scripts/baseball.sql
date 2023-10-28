@@ -109,13 +109,52 @@ GROUP BY yearid
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
 --ATL PBA OAK CLE MI max , trop, 15k , oakland, 18k. progressive 19k, marlins 21k, chi 
 
-SELECT * from homegames where games >= 10
+-- SELECT * from homegames where games >= 10
 
 SELECT park, (attendance/games) as avg_attendence
 from homegames 
 where games >= 10 AND year = 2016
 ORDER BY park
+--------------------
+SELECT 'top_5' TYPE, *  FROM
+(WITH top_5_attendance AS 
+	(SELECT team, park,
+		SUM(hg.attendance) AS attend_2016,
+		SUM(hg.games) AS games,
+-- 		ROUND((SUM(hg.attendance)/sum(hg.games)), 2) AS avg_attend
+	 	(SUM(hg.attendance)/sum(hg.games)) AS avg_attend
+		FROM homegames AS hg 
+		WHERE hg.year = 2016
+		GROUP BY team, park
+		HAVING SUM(hg.games) >= 10
+		ORDER BY avg_attend DESC
+		LIMIT 5)
+SELECT top_5_attendance.attend_2016, top_5_attendance.games, top_5_attendance.park, team_info.name
+FROM top_5_attendance
+INNER JOIN (SELECT * FROM teams ) as team_info ON top_5_attendance.team = team_info.teamid AND team_info.yearid = 2016
+GROUP BY top_5_attendance.attend_2016, top_5_attendance.games, top_5_attendance.park, team_info.name
+ORDER BY top_5_attendance.park)
 
+UNION 
+SELECT 'bottom_5' TYPE, * FROM 
+(WITH bot AS 
+	(SELECT team, park,
+		SUM(hg.attendance) AS attend_2016,
+		SUM(hg.games) AS games,
+-- 		ROUND((SUM(hg.attendance)/sum(hg.games)), 2) AS avg_attend
+	 	(SUM(hg.attendance)/sum(hg.games)) AS avg_attend
+		FROM homegames AS hg 
+		WHERE hg.year = 2016
+		GROUP BY team, park
+		HAVING SUM(hg.games) >= 10
+		ORDER BY avg_attend ASC
+		LIMIT 5)
+SELECT bot.attend_2016, bot.games, bot.park, team_info.name
+FROM bot
+INNER JOIN (SELECT * FROM teams ) as team_info ON bot.team = team_info.teamid AND team_info.yearid = 2016
+GROUP BY bot.attend_2016, bot.games, bot.park, team_info.name
+ORDER BY bot.park)
+ORDER BY 1 DESC, 2
 
 
 
