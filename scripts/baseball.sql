@@ -80,24 +80,37 @@ WHERE wswin IS NOT NULL AND yearid BETWEEN 1970 AND 2016 AND wswin = 'Y'
 GROUP BY name, wswin, w, l, yearid
 ORDER BY w ASC
 
-SELECT name, wswin, w, l, yearid
+SELECT COUNT(name), name, wswin, w, l, yearid
 FROM teams
 WHERE wswin IS NOT NULL AND yearid BETWEEN 1970 AND 2016 AND wswin = 'Y' AND yearid <> 1981
 GROUP BY name, wswin, w, l, yearid
 ORDER BY w ASC
 --Answer Dodgers had 47 Wins but somehow won the sportsball contest.
 
-SELECT 
+SELECT
     COUNT(DISTINCT t.yearid) AS Most_Wins_and_WS_winner
 FROM 
     teams t
-JOIN 
+INNER JOIN 
     seriespost s ON t.yearid = s.yearid AND t.teamid = s.teamidwinner AND s.round = 'WS'
 WHERE 
-    t.w = (SELECT MAX(w) FROM teams WHERE yearid = t.yearid);
---Answer: There were 51 times when the team with the most wins also won the world series.
+    t.w = (SELECT MAX(w) FROM teams WHERE yearid = t.yearid) AND s.yearid != '1981' AND t.yearid BETWEEN 1970 AND 2016
+--12 times where most wins AND ws winner 
+
+SELECT yearid
+FROM seriespost
+WHERE yearid BETWEEN 1970 AND 2016 AND yearid != 1981
+GROUP BY yearid
+--45 seaons
+
+-- ANSWER -- So 12/45 = .26 = 27% of the time.
+
 
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
+--ATL PBA OAK CLE MI
+
+
+
 
 
 -- 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
