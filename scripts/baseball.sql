@@ -15,9 +15,9 @@ ORDER BY height ASC
 LIMIT 1
 
 
-
-
 --Answer: Eddie Gaedel, 43. No team that I can find, One game.
+
+
 -- 3. Find all players in the database who played at Vanderbilt University. Create a list showing each playerâ€™s first and last names as well as the total salary they earned in the major leagues. Sort this list in descending order by the total salary earned. Which Vanderbilt player earned the most money in the majors?
 SELECT namefirst, namelast, schoolname, SUM(salaries.salary) as sumsal
 FROM people
@@ -119,7 +119,7 @@ seasons AS (
 )
 SELECT (winwin.Most_Wins_and_WS_winner::float / seasons.total_seasons::float)*100 as percent_wins
 FROM winwin, seasons;
-
+--ANSWER 26.6% of the time.
 
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
 
@@ -172,11 +172,8 @@ ORDER BY bot.park)
 ORDER BY 1 DESC, 2
 -- ANSWER Top 5: Chicago Cubs, Sanfrancisco Giants, Toronto Blue Jays, St. Louis Cardinals, Los Angeles Dodgers
 -- Bottom 5 Tampa Bay Rays, Oakland Atheletics, Cleveland Indians, Miami Marlins, Chicago White Sox.
-
+--------------------------------------------------------------
 -- 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
-SELECT *
-FROM awardsmanagers
-
 ---------------------------------------------------------------------------------
 
 SELECT 
