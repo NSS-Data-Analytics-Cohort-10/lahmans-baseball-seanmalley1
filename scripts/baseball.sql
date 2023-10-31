@@ -177,47 +177,31 @@ ORDER BY 1 DESC, 2
 SELECT *
 FROM awardsmanagers
 
---
--- SELECT playerid, awardid, lgid, yearid
--- FROM awardsmanagers
--- WHERE (SELECT
--- 		CASE	WHEN awardid LIKE 'TSN Manager of the Year' AND 
--- 				WHEN lgid = 'AL' THEN 'AL Award Only' 
--- 				WHEN lgid IN ('AL', 'ML') THEN 'AL and ML Awards'
--- 				WHEN lgid = 'ML' THEN 'ML Award Only'
--- 				END AS awards)	
--- GROUP BY awardid, playerid, yearid, lgid
--------------------------------------------------------------------------------
-SELECT 
-    am.playerid, p.namefirst, p.namelast, t.name, am.yearid
-FROM 
-    awardsmanagers AS am
-WHERE 
-    awardid = 'TSN Manager of the Year' AND lgid IN ('AL', 'ML')
-INNER JOIN managers AS m
-USING(playerid)
-INNER JOIN teams AS t
-USING(teamid)
-INNER JOIN people as p
-USING(teamid)
-GROUP BY playerid
 ---------------------------------------------------------------------------------
 
 SELECT 
-    m.yearID, m.lgID, m.playerID, p.nameFirst, p.nameLast, a.awardID
+    a.playerID,
+    p.nameFirst,
+    p.nameLast,
+	t.teamid,
+	tf.franchname
 FROM 
-    Managers m
+    awardsmanagers a
 JOIN 
-    People p ON m.playerID = p.playerID
+    people p ON a.playerID = p.playerID
+JOIN
+	managers m ON p.playerID = m.playerID
 JOIN 
-    AwardsManagers a ON m.playerID = a.playerID AND m.yearID = a.yearID AND m.lgID = a.lgID
+	teams t USING(teamid)
 JOIN 
-	teams ON a.yearid = t.yearid
+	teamsfranchises tf USING(franchid)
 WHERE 
-    a.awardID = 'TSN Manager of the Year' AND (m.lgID = 'AL' OR m.lgID = 'NL')
-GROUP BY m.yearID, m.lgID, m.playerID, p.nameFirst, p.nameLast, a.awardID
-ORDER BY p.namelast, m.yearID DESC
-
+    a.awardID = 'TSN Manager of the Year' AND (a.lgID = 'AL' OR a.lgID = 'NL')
+GROUP BY 
+    a.playerID, p.nameFirst, p.nameLast, t.teamid, tf.franchname
+HAVING 
+    COUNT(DISTINCT a.lgID) = 2;
+-- ANSWER: Davey Johnson, managing Baltimore Orioles, Cincinnati Reds, LA Dodgers, New York Mets, Washington Nationals, Washington Senators, and Jim Leyland, managing Colorado Rockies, Detriot Tigers, Florida MArlins, Pittsburg Pirates
 
 -- 10. Find all players who hit their career highest number of home runs in 2016. Consider only players who have played in the league for at least 10 years, and who hit at least one home run in 2016. Report the players' first and last names and the number of home runs they hit in 2016.
 -- should be around 
@@ -234,6 +218,8 @@ WHERE
     b.yearID = 2016 
     AND b.HR = (SELECT MAX(HR) FROM batting WHERE playerID = b.playerID)
     AND b.HR > 0 
-    AND (SELECT COUNT(DISTINCT yearID) FROM batting WHERE playerID = b.playerID) >= 10;
+    AND (SELECT COUNT(DISTINCT yearID) FROM batting WHERE playerID = b.playerID) >= 10
+ORDER BY hr DESC
+--Answer: Edwin Encarnacion 42, Robinson Cano 39, Mike Napoli 34, Justin Upton 31, Angel Pagan 12, Rajai Davis 12, Adam Wainwright 2, Francisco Liriano, 1, Bartolo Colon 1.
 
 
