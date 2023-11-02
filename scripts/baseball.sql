@@ -220,4 +220,25 @@ WHERE
 ORDER BY hr DESC
 --Answer: Edwin Encarnacion 42, Robinson Cano 39, Mike Napoli 34, Justin Upton 31, Angel Pagan 12, Rajai Davis 12, Adam Wainwright 2, Francisco Liriano, 1, Bartolo Colon 1.
 
+-- 11. Is there any correlation between number of wins and team salary? Use data from 2000 and later to answer this question. As you do this analysis, keep in mind that salaries across the whole league tend to increase together, so you may want to look on a year-by-year basis.
+SELECT *
+FROM salaries
+-------------This gives me each teams total salary per year.
+SELECT yearid, teamid, SUM(salary) AS total_salary
+FROM salaries
+GROUP BY yearid, teamid
+ORDER BY yearid, teamid;
+
+
+
+
+-- 12. In this question, you will explore the connection between number of wins and attendance.
+--     <ol type="a">
+--       <li>Does there appear to be any correlation between attendance at home games and number of wins? </li>
+--       <li>Do teams that win the world series see a boost in attendance the following year? What about teams that made the playoffs? Making the playoffs means either being a division winner or a wild card winner.</li>
+--     </ol>
+
+
+-- 13. It is thought that since left-handed pitchers are more rare, causing batters to face them less often, that they are more effective. Investigate this claim and present evidence to either support or dispute this claim. First, determine just how rare left-handed pitchers are compared with right-handed pitchers. Are left-handed pitchers more likely to win the Cy Young Award? Are they more likely to make it into the hall of fame?
+
 
