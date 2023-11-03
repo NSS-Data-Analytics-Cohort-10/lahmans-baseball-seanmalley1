@@ -223,12 +223,15 @@ ORDER BY hr DESC
 -- 11. Is there any correlation between number of wins and team salary? Use data from 2000 and later to answer this question. As you do this analysis, keep in mind that salaries across the whole league tend to increase together, so you may want to look on a year-by-year basis.
 SELECT *
 FROM salaries
--------------This gives me each teams total salary per year.
-SELECT yearid, teamid, SUM(salary) AS total_salary
-FROM salaries
-GROUP BY yearid, teamid
-ORDER BY yearid, teamid;
-
+-------------This gives me each teams total salary per year, and number of wins, division wins, and world series wins
+SELECT s.yearid, s.teamid, SUM(salary) AS total_salary, w, divwin, wswin
+FROM salaries s
+JOIN teams t USING(teamid)
+GROUP BY s.yearid, s.teamid, w, divwin, wswin
+ORDER BY s.yearid, s.teamid;
+-------
+SELECT 
+	corr("")
 
 
 
